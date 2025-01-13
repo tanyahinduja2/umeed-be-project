@@ -55,6 +55,7 @@ const LoginPage = () => {
             recognition.onerror = () => {
                 setListening(false);
                 setError('Speech recognition failed. Please try again.');
+                speakText('Speech recognition failed. Please try again.');
             };
 
             recognition.start();
@@ -88,7 +89,7 @@ const LoginPage = () => {
 
             if (response.ok) {
                 speakText('Login successful! Redirecting to the application page.', () => {
-                    navigate('/application'); // Navigate to application page
+                    navigate('/application', { state: { userName: data.user.name } }); // Navigate to application page
                 });
             } else {
                 setError(data.message || 'Login failed. Please try again.');
