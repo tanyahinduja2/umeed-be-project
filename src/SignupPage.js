@@ -1,7 +1,9 @@
+/* global webkitSpeechRecognition */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './SignupPage.css'; // Importing the CSS file
 
-/* global webkitSpeechRecognition */
 const SignupPage = () => {
     const [formData, setFormData] = useState({
         email: '',
@@ -11,12 +13,11 @@ const SignupPage = () => {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [mode, setMode] = useState(null); // Mode: 'typing' or 'speaking'
-    const [currentField, setCurrentField] = useState(null); // Track the current field for verbal input
-    const navigate = useNavigate(); // For navigation
-    const [listening, setListening] = useState(false); // Track if STT is active
+    const [mode, setMode] = useState(null);
+    const [currentField, setCurrentField] = useState(null);
+    const navigate = useNavigate();
+    const [listening, setListening] = useState(false);
 
-    // Text-to-Speech (TTS)
     const speakText = (text, callback = null) => {
         if ('speechSynthesis' in window) {
             const speech = new SpeechSynthesisUtterance(text);
@@ -32,7 +33,6 @@ const SignupPage = () => {
         }
     };
 
-    // Speech-to-Text (STT)
     const startSpeechRecognition = (field, onComplete) => {
         if ('webkitSpeechRecognition' in window) {
             setListening(true);
@@ -44,7 +44,6 @@ const SignupPage = () => {
                 setListening(false);
                 let transcript = event.results[0][0].transcript;
 
-                // Replace "at the rate" with "@" for email field
                 if (field === 'email') {
                     transcript = transcript.replace(/at the rate/gi, '@').replace(/ /g, '');
                 }
@@ -68,9 +67,7 @@ const SignupPage = () => {
         }
     };
 
-    // Handle form submission
     const handleSubmit = async () => {
-        // Ensure all fields are filled
         if (
             !formData.email.trim() ||
             !formData.name.trim() ||
@@ -82,7 +79,6 @@ const SignupPage = () => {
             return;
         }
 
-        // Ensure passwords match
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match.');
             speakText('Passwords do not match. Please re-enter.');
@@ -90,7 +86,6 @@ const SignupPage = () => {
         }
 
         try {
-            // Call backend API
             const response = await fetch('http://localhost:5000/api/users/signup', {
                 method: 'POST',
                 headers: {
@@ -108,7 +103,7 @@ const SignupPage = () => {
             if (response.ok) {
                 setSuccess('Signup successful!');
                 speakText('Signup successful! Redirecting to the login page.', () => {
-                    navigate('/login'); // Navigate to login page
+                    navigate('/login');
                 });
             } else {
                 setError(data.message || 'Signup failed.');
@@ -121,7 +116,6 @@ const SignupPage = () => {
         }
     };
 
-    // Navigate through fields in speaking mode
     const proceedToNextField = (current) => {
         const fieldOrder = ['email', 'name', 'password', 'confirmPassword'];
         const currentIndex = fieldOrder.indexOf(current);
@@ -136,7 +130,6 @@ const SignupPage = () => {
         }
     };
 
-    // Mode selection on page load
     useEffect(() => {
         const welcomeMessage =
             'Welcome to the signup page. Say "typing mode" to use your keyboard, or say "speaking mode" to provide your details verbally.';
@@ -171,11 +164,10 @@ const SignupPage = () => {
         });
     }, []);
 
-    // Add Enter key listener
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (e.key === 'Enter') {
-                handleSubmit(); // Submit the form when Enter is pressed
+                handleSubmit();
             }
         };
 
@@ -186,9 +178,9 @@ const SignupPage = () => {
     }, [formData]);
 
     return (
-        <div>
-            <h1>Signup</h1>
-            <form onSubmit={(e) => e.preventDefault()}>
+        <div className="signup-container">
+            <form className="signup-form" onSubmit={(e) => e.preventDefault()}>
+                <h1>Signup</h1>
                 <div>
                     <label>Email:</label>
                     <input
@@ -227,8 +219,8 @@ const SignupPage = () => {
                         }
                     />
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {success && <p style={{ color: 'green' }}>{success}</p>}
+                {error && <p className="error">{error}</p>}
+                {success && <p className="success">{success}</p>}
                 <button type="button" onClick={handleSubmit}>
                     Signup
                 </button>

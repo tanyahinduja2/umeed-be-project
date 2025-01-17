@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'; 
 
 /* global webkitSpeechRecognition */
 const LoginPage = () => {
@@ -162,10 +163,11 @@ const LoginPage = () => {
     }, [formData]);
 
     return (
-        <div>
+        <div className="login-container">
+            
+            <form onSubmit={(e) => e.preventDefault()} className="login-form">
             <h1>Login</h1>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <div>
+                <div className="input-field">
                     <label>Email:</label>
                     <input
                         type="email"
@@ -174,7 +176,7 @@ const LoginPage = () => {
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     />
                 </div>
-                <div>
+                <div className="input-field">
                     <label>Password:</label>
                     <input
                         type="password"
@@ -183,8 +185,8 @@ const LoginPage = () => {
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     />
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="button" onClick={handleSubmit}>
+                {error && <p className="error-message">{error}</p>}
+                <button type="button" onClick={handleSubmit} className="login-button">
                     Login
                 </button>
             </form>
