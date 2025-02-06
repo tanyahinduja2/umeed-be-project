@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './SignupPage.css';
+import leftImage from './assets/images/Signup2.png'; 
 
 /* global webkitSpeechRecognition */
 const SignupPage = () => {
@@ -186,53 +188,82 @@ const SignupPage = () => {
     }, [formData]);
 
     return (
-        <div>
-            <h1>Signup</h1>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
+        <div className="signup-page">
+            {/* Left Section */}
+            <div className="left-section">
+                <h2>Stay on top of Job tracking</h2>
+                <p>
+                "Join us today to explore inclusive career opportunities and unlock your potential. It's simple and accessible for everyone!"
+                </p>
+                <img src={leftImage} alt="Time Tracking" />
+                
+            </div>
+
+            {/* Right Section */}
+            <div className="right-section">
+                <h1>Create Account</h1>
+                {mode === 'speaking' && <p className="instructions">Speaking Mode Active</p>}
+                {listening && <p className="listening-indicator">Listening...</p>}
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <div>
+                        <label>First Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={(e) =>
+                                setFormData({ ...formData, name: e.target.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({ ...formData, email: e.target.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label>Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={(e) =>
+                                setFormData({ ...formData, password: e.target.value })
+                            }
+                        />
+                    </div>
+                    <div>
+                        <label>Confirm Password</label>
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    confirmPassword: e.target.value,
+                                })
+                            }
+                        />
+                    </div>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {success && <p style={{ color: 'green' }}>{success}</p>}
+                    <button type="button" onClick={handleSubmit}>
+                        Create Account
+                    </button>
+                </form>
+                <div className="alt-login">
+                    <p>
+                        Already have an account? <a href="/login">Login</a>
+                    </p>
                 </div>
-                <div>
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
-                </div>
-                <div>
-                    <label>Confirm Password:</label>
-                    <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={(e) =>
-                            setFormData({ ...formData, confirmPassword: e.target.value })
-                        }
-                    />
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {success && <p style={{ color: 'green' }}>{success}</p>}
-                <button type="button" onClick={handleSubmit}>
-                    Signup
-                </button>
-            </form>
+            </div>
         </div>
     );
 };

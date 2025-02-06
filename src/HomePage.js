@@ -1,7 +1,7 @@
 /* global webkitSpeechRecognition */
 import React, { useEffect } from 'react';
 import './HomePage.css';
-import heroImage from './assets/images/image.png'; // Adjust path to match your file's location
+import heroImage from './assets/images/Home1.png'; // Adjust path to match your file's location
 
 
 const HomePage = () => {

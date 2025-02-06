@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import './ApplicationPage.css'; // Import the CSS
 
 /* global webkitSpeechRecognition */
 const ApplicationPage = () => {
@@ -145,19 +146,31 @@ const ApplicationPage = () => {
     }, [currentJobIndex, hasSpokenWelcome]);
 
     return (
-        <div>
-            <h1>Welcome, {userName}</h1>
-            <h2>Available Jobs</h2>
-            <ul>
-                {jobs.map((job) => (
-                    <li key={job.id}>
-                        {job.title} - {job.location} - {job.salary}{' '}
-                        <button onClick={() => applyForSpecificJob(job)} style={{ marginLeft: '10px' }}>
-                            Apply
-                        </button>
-                    </li>
-                ))}
-            </ul>
+        <div className="application-page">
+            {/* Navbar */}
+            <nav className="application-navbar">
+                <div className="application-logo">Umeed</div>
+                <button className="application-signout-btn" onClick={() => navigate('/')}>Sign Out</button>
+            </nav>
+
+            {/* Welcome Message */}
+            <h1 className="application-welcome-message">Welcome, {userName}</h1>
+            <h2 className="application-jobs-heading">Available Jobs</h2>
+            
+            <div className="application-job-list">
+                <ul className="application-job-ul">
+                    {jobs.map((job) => (
+                        <li key={job.id} className="application-job-li">
+                            <span className="application-job-title">{job.title}</span>
+                            <span className="application-job-location">{job.location}</span>
+                            <span className="application-job-salary">{job.salary}</span>
+                            <button onClick={() => applyForSpecificJob(job)} className="application-apply-btn">
+                                Apply
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
             <p>You can say "read the next job," "apply for this job," or "go back to home page."</p>
             {listening && <p>Listening for your command...</p>}
         </div>

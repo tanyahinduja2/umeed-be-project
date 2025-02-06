@@ -1,0 +1,157 @@
+/* General Page Styles */
+.signup-page {
+    display: flex;
+    height: 100vh; /* Full screen height */
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    overflow: hidden; /* Prevent scroll */
+}
+
+.signup-page .left-section {
+    flex: 1;
+    background: #0078d4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #fff;
+}
+
+.signup-page .left-section img {
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.signup-page .left-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.signup-page .left-section p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Right Section - Form */
+.signup-page .right-section {
+    flex: 1;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.signup-page .right-section h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.signup-page .right-section form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.signup-page .right-section form div {
+    margin-bottom: 20px;
+}
+
+.signup-page .right-section label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.signup-page .right-section input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.signup-page .right-section input:focus {
+    border-color: #5d5fe8;
+}
+
+.signup-page .right-section button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #0078d4;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.signup-page .right-section button:hover {
+    background-color: #4c4dcf;
+}
+
+.signup-page .right-section .alt-login {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-page .right-section .alt-login p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.signup-page .right-section .alt-login a {
+    color: #062f77;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.signup-page .right-section .alt-login a:hover {
+    color: #4c4dcf;
+}
+
+/* Instructions */
+.signup-page .instructions {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.signup-page .listening-indicator {
+    color: #ff0000;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .signup-page {
+        flex-direction: column;
+    }
+
+    .signup-page .left-section,
+    .signup-page .right-section {
+        flex: unset;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .signup-page .left-section img {
+        max-width: 60%;
+    }
+}

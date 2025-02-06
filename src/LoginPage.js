@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css';
+
 
 /* global webkitSpeechRecognition */
 const LoginPage = () => {
@@ -163,35 +165,40 @@ const LoginPage = () => {
     }, [formData]);
 
     return (
-        <div>
-            <h1>Login</h1>
-            <form onSubmit={(e) => e.preventDefault()}>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="button" onClick={handleSubmit}>
-                    Login
-                </button>
-            </form>
-            {listening && <p>Listening...</p>}
+        <div className="login-page">
+            <div className="login-overlay"></div>
+
+            <div className="login-container">
+                <h1>Login</h1>
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <div>
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label>Password:</label>
+                        <input
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        />
+                    </div>
+                    {error && <p className="error-message">{error}</p>}
+                    <button type="button" onClick={handleSubmit}>
+                        Login
+                    </button>
+                </form>
+                {listening && <p className="listening">Listening...</p>}
+            </div>
         </div>
     );
 };
+
 
 export default LoginPage;

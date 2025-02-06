@@ -1,0 +1,113 @@
+/* Main container */
+.application-page {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f4f8;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.application-page .application-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #083858;
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo */
+.application-page .application-logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Signout Button */
+.application-page .application-signout-btn {
+    background-color: #d9534f;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.application-page .application-signout-btn:hover {
+    background-color: #c9302c;
+}
+
+/* Welcome Message */
+.application-page .application-welcome-message {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #2c3e50;
+}
+
+.application-page .application-jobs-heading {
+    padding: 20px 0;  /* Keeps padding */
+    margin-left: 20px;  /* Adjust this value to shift it right */
+    text-align: left;  /* Ensures it stays aligned properly */
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+
+/* Job Listings */
+.application-page .application-job-list {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.application-page .application-job-ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Job List Item */
+.application-page .application-job-li {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Job Title */
+.application-page .application-job-title {
+    font-weight: bold;
+    color: #083858;
+}
+
+/* Job Location & Salary */
+.application-page .application-job-location,
+.application-page .application-job-salary {
+    color: #777;
+    font-size: 14px;
+}
+
+/* Apply Button */
+.application-page .application-apply-btn {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.application-page .application-apply-btn:hover {
+    background-color: #2980b9;
+}
