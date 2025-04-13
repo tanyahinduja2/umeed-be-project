@@ -8,10 +8,15 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import Peer from "simple-peer";
 import io from "socket.io-client";
 import "../App.css";
+import { jsPDF } from "jspdf";
+import { useNavigate } from "react-router-dom";
+
 
 const socket = io.connect("http://localhost:5000");
 
 const VideoChat = () => {
+  const navigate = useNavigate();
+
   const [me, setMe] = useState("");
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
@@ -59,6 +64,12 @@ const VideoChat = () => {
     };
   }, []);
 
+  const downloadPdfFile = () => {
+    const doc = new jsPDF();
+    doc.text(transcription, 10, 10);
+    doc.save("transcription.pdf");
+  };
+
   const callUser = (id) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });
     peer.on("signal", (data) => {
@@ -70,10 +81,10 @@ const VideoChat = () => {
       });
     });
     peer.on("stream", (stream) => (userVideo.current.srcObject = stream));
-    // socket.on("callAccepted", (signal) => {
-    //   setCallAccepted(true);
-    //   peer.signal(signal);
-    // });
+    socket.on("callAccepted", (signal) => {
+      setCallAccepted(true);
+      peer.signal(signal);
+    });
     socket.on("callAccepted", (data) => {
       setCallAccepted(true);
       // Store the name of the user accepting the call
@@ -88,7 +99,7 @@ const VideoChat = () => {
   
 
   // const callUser = (id) => {
-  //   const peer = new Peer({ initiator: true, trickle: false, stream });
+  // const peer = new Peer({ initiator: true, trickle: false, stream });
   
   //   peer.on("signal", (data) => {
   //     socket.emit("callUser", {
@@ -101,8 +112,11 @@ const VideoChat = () => {
   
   //   peer.on("stream", (stream) => (userVideo.current.srcObject = stream));
   
-  //   const onCallAccepted = (signal) => {
+  //   const onCallAccepted = (signal, data) => {
   //     setCallAccepted(true);
+  //     if(data.name) {
+  //       setName(data.name)
+  //     }
   //     peer.signal(signal);
   //   };
   
@@ -115,26 +129,11 @@ const VideoChat = () => {
   // };
   
 
-  // const answerCall = () => {
-  //   setCallAccepted(true);
-  //   const peer = new Peer({ initiator: false, trickle: false, stream });
-  //   peer.on("signal", (data) => {
-  //     socket.emit("answerCall", { signal: data, to: caller, name: name }); // Include your name
-  //   });
-  //   peer.on("stream", (stream) => (userVideo.current.srcObject = stream));
-  //   peer.signal(callerSignal);
-  //   connectionRef.current = peer;
-  // };
-
   const answerCall = () => {
     setCallAccepted(true);
     const peer = new Peer({ initiator: false, trickle: false, stream });
     peer.on("signal", (data) => {
-      socket.emit("answerCall", {
-        signal: data,
-        to: caller,
-        name: name, // Include the accepting user's name
-      });
+      socket.emit("answerCall", { signal: data, to: caller, name: name }); // Include your name
     });
     peer.on("stream", (stream) => (userVideo.current.srcObject = stream));
     peer.signal(callerSignal);
@@ -200,13 +199,16 @@ const VideoChat = () => {
 
   return (
     <>
-      <h1 style={{ textAlign: "center", color: "#fff" }}>Zoomish</h1>
+      <h1 style={{ textAlign: "center", color: "#fff" }}>Video Chat</h1>
       <div className="container">
         {!callAccepted || callEnded ? (
           <>
             <div className="video-container">
               <div className="video">
                 {stream && <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
+              </div>
+              <div className="video">
+                {callAccepted && !callEnded && <video playsInline ref={userVideo} autoPlay style={{ width: "300px" }} />}
               </div>
             </div>
             <div className="myId">
@@ -267,6 +269,9 @@ const VideoChat = () => {
                 disabled
                 style={{ maxHeight: "200px", overflowY: "auto" }}
               />
+              <Button variant="contained" color="primary" onClick={downloadPdfFile}>
+  Download as PDF
+</Button>
             </div>
             <div style={{ marginTop: "10px", display: "flex", gap: "10px", justifyContent: "center" }}>
               <Button variant="contained" color="secondary" onClick={leaveCall}>
