@@ -70,13 +70,15 @@ const ApplicationPage = () => {
 
                 if (transcript.includes('read')) {
                     handleNextJob();
+                } else if (transcript.includes('previous')) {
+                    handlePreviousJob();
                 } else if (transcript.includes('apply')) {
                     applyForSpecificJob(jobs[currentJobIndex]); // Use the current job for voice commands
                 } else if (transcript.includes('go back to home')) {
                     navigate('/');
                 } else {
                     speakText(
-                        'Command not recognized. You can say "read the next job," "apply for this job," or "go back to home page."',
+                        'Command not recognized. You can say "read the next job," "read the previous job," "apply for this job," or "go back to home page."',
                         startSpeechRecognition
                     );
                 }
@@ -105,6 +107,14 @@ const ApplicationPage = () => {
         }
     };
 
+    const handlePreviousJob = () => {
+        if (currentJobIndex > 0) {
+            setCurrentJobIndex(prevIndex => prevIndex - 1); // Correct way to update state
+        } else {
+            speakText('This is the first job. There are no previous jobs.');
+        }
+    };
+    
     // Apply for a Specific Job
     const applyForSpecificJob = (job) => {
         const applicationMessage = `Opening the application page for the position of ${job.title}. Redirecting to the link.`;
@@ -138,12 +148,11 @@ const ApplicationPage = () => {
         }
     }, [hasSpokenWelcome]); // Ensures welcome is spoken only once
 
-    // Trigger Job Reading on Current Job Change
     useEffect(() => {
-        if (hasSpokenWelcome && currentJobIndex !== 0) {
+        if (hasSpokenWelcome) {
             readCurrentJob();
         }
-    }, [currentJobIndex, hasSpokenWelcome]);
+    }, [currentJobIndex]); 
 
     return (
         <div className="application-page">
@@ -171,7 +180,7 @@ const ApplicationPage = () => {
                     ))}
                 </ul>
             </div>
-            <p>You can say "read the next job," "apply for this job," or "go back to home page."</p>
+            <p>You can say "read the next job," "read the previous job," "apply for this job," or "go back to home page."</p>
             {listening && <p>Listening for your command...</p>}
         </div>
     );
