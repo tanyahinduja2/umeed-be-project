@@ -77,6 +77,7 @@ const HomePage = () => {
                 <div className="nav-links">
                     <button className="btn login-btn" onClick={() => (window.location.href = '/login')}>Login</button>
                     <button className="btn signup-btn" onClick={() => (window.location.href = '/signup')}>Signup</button>
+                    <button className="btn signup-btn" onClick={() => (window.location.href = '/mentor')}>Mentor</button>
                 </div>
             </div>
     
@@ -91,11 +92,13 @@ const HomePage = () => {
                             To get started, simply say: <br />
                             <strong>"Go to Login page"</strong> <br />
                             <strong>"Go to Signup page"</strong><br />
+                            <strong>"Go to Mentor page"</strong><br />
                             <strong>"Say again"</strong>
                         </p>
                         <div className="button-group">
                             <button className="btn login-btn" onClick={() => (window.location.href = '/login')}>Login</button>
                             <button className="btn signup-btn" onClick={() => (window.location.href = '/signup')}>Signup</button>
+                            <button className="btn signup-btn" onClick={() => (window.location.href = '/mentor')}>Mentor</button>
                         </div>
                     </div>
                 </section>
