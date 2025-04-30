@@ -54,7 +54,7 @@
 }
 
 body {
-	background-color: #7fcbfa;
+	background-color: #F2F9FF;
 }
 
 .speech-text {
@@ -97,6 +97,13 @@ body {
 	font-size: 15px; 
 }
 
+.chat-heading {
+	font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+	margin-top: 20px
+}
+
 .chat-container {
 	display: flex;
 	flex-direction: column;
@@ -121,16 +128,17 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	height: 50px;
 }
 
 .chat-input input {
 	color: white;
-	background-color: #042699;
-	border: solid 5px white;
-	width: 400px;
-	height: 30px;
+	background-color: #083858;
+	border: solid 5px #3498db;
+	width: 600px;
+	height: 60px;
 	border-radius: 4px;
-	padding: 8px;
+	padding: 12px;
 }
 
 .chat-input input::placeholder {
@@ -138,11 +146,15 @@ body {
 }
 
 .chat-input button {
-	background-color: white;
-	color: #042699; 
-	border: solid 5px white;
-	height: 55px;
+	background-color: #3498db;
+	color: white; 
+	border: solid 5px #3498db;
+	height: 60px;
+	width: 50px;
 	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .chat-message {
@@ -150,7 +162,7 @@ body {
 	padding: 10px;
 	border-radius: 10px;
 	word-wrap: break-word;
-	max-height: 50px;
+	max-height: 60px;
 	margin: 10px;
   }
 
@@ -178,3 +190,133 @@ body {
 	display: block;
 	margin-top: 5px;
   }
+
+  .mentor-page {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.mentor-heading {
+	font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+	margin-top: 30px;
+}  
+
+.mentor-cards {
+	display: flex;
+	flex-direction: row;
+	gap: 50px;
+}
+
+.mentor-card {
+	font-family: Montserrat, sans-serif;
+	width: 350px;
+	height: 200px;
+	translate: -6px -6px;
+	background: #083858;
+	border: 3px solid #000000;
+	box-shadow: 12px 12px 0 #000000;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	margin-top: 30px
+  }
+  
+  .mentor-head {
+	font-family: Montserrat, sans-serif;
+	font-size: 18px;
+	font-weight: 900;
+	width: 100%;
+	height: 40px;
+	background: #ffffff;
+	padding: 5px 12px;
+	color: #000000;
+	border-bottom: 3px solid #000000;
+  }
+  
+  .mentor-content {
+	padding: 8px 12px;
+	font-size: 16px;
+	font-weight: 600;
+	color: white;
+  }
+
+  .mentor-buttons {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+  }
+  
+  .mentor-button {
+	padding: 5px 10px;
+	margin-top: 10px;
+	border: 3px solid #000000;
+	box-shadow: 3px 3px 0 #000000;
+	font-weight: 750;
+	background: #3498db;
+	transition: all 0.3s ease;
+	cursor: pointer;
+  }
+  
+  .mentor-button:hover {
+	translate: 1.5px 1.5px;
+	box-shadow: 1.5px 1.5px 0 #000000;
+	background: #3498db;
+  }
+  
+  .mentor-button:active {
+	translate: 3px 3px;
+	box-shadow: 0 0 0 #000000;
+  }
+  
+  .mentor-card:hover {
+	translate: -6px;
+  }
+  
+ .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #083858;
+    color: #fff;
+    padding: 13px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 100%;
+}
+
+ .navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar .nav-links .btn {
+    background-color: #3498db;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+ .navbar .nav-links .logout-btn {
+    background-color: #d9534f;
+    border: none;
+    color: #fff;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+ .navbar .nav-links .btn:hover {
+    background-color: #2980b9;
+}
+
+ .navbar .nav-links .logout-btn:hover {
+    background-color: #d8332d;
+}

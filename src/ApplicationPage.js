@@ -1,189 +1,192 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import './ApplicationPage.css'; // Import the CSS
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./ApplicationPage.css"; // Import the CSS
+import { color } from "framer-motion";
 
-/* global webkitSpeechRecognition */
+
 const ApplicationPage = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const userName = location.state?.userName || 'User';
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userName = location.state?.userName || "User";
 
-    // Hardcoded jobs (later to be fetched from an API)
-    const jobs = [
-        { 
-            id: 1, 
-            title: 'Software Developer', 
-            description: 'Build and maintain web applications.', 
-            location: 'Remote', 
-            salary: '$80,000/year', 
-            link: 'https://www.deloitte.com/software-developer-apply'
-        },
-        { 
-            id: 2, 
-            title: 'Data Analyst', 
-            description: 'Analyze and interpret complex data.', 
-            location: 'New York, NY', 
-            salary: '$70,000/year', 
-            link: 'https://www.deloitte.com/data-analyst-apply'
-        },
-        { 
-            id: 3, 
-            title: 'Graphic Designer', 
-            description: 'Design creative content for marketing campaigns.', 
-            location: 'San Francisco, CA', 
-            salary: '$60,000/year', 
-            link: 'https://www.deloitte.com/graphic-designer-apply'
-        },
-    ];
+  const [resumeFile, setResumeFile] = useState(null);
+  const [userInfo, setUserInfo] = useState({});
+  const [recommendedJob, setRecommendedJob] = useState("");
+  const [matchingJobs, setMatchingJobs] = useState([]);
+  const [listening, setListening] = useState(false);
+  const [hasSpokenWelcome, setHasSpokenWelcome] = useState(false);
 
-    const [currentJobIndex, setCurrentJobIndex] = useState(0); // Start at the first job
-    const [listening, setListening] = useState(false); // Tracks STT state
-    const [hasSpokenWelcome, setHasSpokenWelcome] = useState(false); // Ensures welcome speech is spoken only once
+  // Text-to-Speech
+  const speakText = (text, callback = null) => {
+    if ("speechSynthesis" in window) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = "en-US";
+      speech.onend = () => {
+        if (callback) callback();
+      };
+      window.speechSynthesis.speak(speech);
+    }
+  };
 
-    // Text-to-Speech (TTS)
-    const speakText = (text, callback = null) => {
-        if ('speechSynthesis' in window) {
-            const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = 'en-US';
+  const handleFileChange = (event) => {
+    setResumeFile(event.target.files[0]);
+  };
 
-            speech.onend = () => {
-                if (callback) callback();
-            };
+  const handleResumeSubmit = async (event) => {
+    event.preventDefault();
 
-            window.speechSynthesis.speak(speech);
-        } else {
-            console.error('TTS is not supported in this browser.');
-        }
-    };
+    if (!resumeFile) {
+      speakText("Please select a resume file first.");
+      return;
+    }
 
-    // Speech-to-Text (STT)
-    const startSpeechRecognition = () => {
-        if ('webkitSpeechRecognition' in window) {
-            setListening(true);
-            const recognition = new webkitSpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
+    const formData = new FormData();
+    formData.append("resume", resumeFile);
 
-            recognition.onresult = (event) => {
-                setListening(false);
-                const transcript = event.results[0][0].transcript.toLowerCase();
+    try {
+      const response = await fetch("http://127.0.0.1:5000/pred", {
+        method: "POST",
+        body: formData,
+      });
 
-                if (transcript.includes('read')) {
-                    handleNextJob();
-                } else if (transcript.includes('previous')) {
-                    handlePreviousJob();
-                } else if (transcript.includes('apply')) {
-                    applyForSpecificJob(jobs[currentJobIndex]); // Use the current job for voice commands
-                } else if (transcript.includes('go back to home')) {
-                    navigate('/');
-                } else {
-                    speakText(
-                        'Command not recognized. You can say "read the next job," "read the previous job," "apply for this job," or "go back to home page."',
-                        startSpeechRecognition
-                    );
-                }
-            };
+      if (!response.ok) {
+        throw new Error("Failed to upload resume.");
+      }
 
-            recognition.onerror = () => {
-                setListening(false);
-                speakText('Speech recognition failed. Please try again.', startSpeechRecognition);
-            };
+      const data = await response.json();
 
-            recognition.onend = () => {
-                setListening(false);
-            };
+      setUserInfo({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        extracted_skills: data.extracted_skills,
+        extracted_education: data.extracted_education,
+      });
 
-            recognition.start();
-        }
-    };
+      setRecommendedJob(data.recommended_job || "");
 
-    // Handle Next Job
-    const handleNextJob = () => {
-        if (currentJobIndex < jobs.length - 1) {
-            const nextIndex = currentJobIndex + 1;
-            setCurrentJobIndex(nextIndex);
-        } else {
-            speakText('There are no more jobs to read.', startSpeechRecognition);
-        }
-    };
+      // === New Filtering Logic ===
+      const allJobs = data.google_jobs || [];
+      const indianJobs = allJobs.filter(
+        (job) => job.location && job.location.toLowerCase().includes("india")
+      );
+      const topIndianJobs = indianJobs.slice(0, 10);
 
-    const handlePreviousJob = () => {
-        if (currentJobIndex > 0) {
-            setCurrentJobIndex(prevIndex => prevIndex - 1); // Correct way to update state
-        } else {
-            speakText('This is the first job. There are no previous jobs.');
-        }
-    };
-    
-    // Apply for a Specific Job
-    const applyForSpecificJob = (job) => {
-        const applicationMessage = `Opening the application page for the position of ${job.title}. Redirecting to the link.`;
-        speakText(applicationMessage, () => {
-            window.open(job.link, '_blank'); // Open job link in a new tab
-        });
-    };
+      setMatchingJobs(topIndianJobs);
 
-    // Read Current Job
-    const readCurrentJob = () => {
-        const job = jobs[currentJobIndex];
-        const jobDetails = `
-            Job ID: ${job.id}.
-            Title: ${job.title}.
-            Description: ${job.description}.
-            Location: ${job.location}.
-            Salary: ${job.salary}.
-            To apply for this job, say "apply for this job."
-        `;
-        speakText(jobDetails, startSpeechRecognition);
-    };
+      speakText("Resume uploaded successfully. Showing your details and jobs.");
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+      speakText("There was an error uploading the resume. Please try again.");
+    }
+  };
 
-    // On Page Load
-    useEffect(() => {
-        if (!hasSpokenWelcome) {
-            const welcomeMessage = `Welcome, ${userName}. You are now on the application page. Say "read the next job" to hear job details or "go back to home page" to return to the home page.`;
-            speakText(welcomeMessage, () => {
-                setHasSpokenWelcome(true);
-                readCurrentJob(); // Reads the first job after welcome
-            });
-        }
-    }, [hasSpokenWelcome]); // Ensures welcome is spoken only once
+  useEffect(() => {
+    if (!hasSpokenWelcome) {
+      const welcomeMessage = `Welcome, ${userName}. You are now on the application page.`;
+      speakText(welcomeMessage, () => {
+        setHasSpokenWelcome(true);
+      });
+    }
+  }, [hasSpokenWelcome]);
 
-    useEffect(() => {
-        if (hasSpokenWelcome) {
-            readCurrentJob();
-        }
-    }, [currentJobIndex]); 
-
-    return (
-        <div className="application-page">
-            {/* Navbar */}
-            <nav className="application-navbar">
-                <div className="application-logo">Umeed</div>
-                <button className="application-signout-btn" onClick={() => navigate('/')}>Sign Out</button>
-            </nav>
-
-            {/* Welcome Message */}
-            <h1 className="application-welcome-message">Welcome, {userName}</h1>
-            <h2 className="application-jobs-heading">Available Jobs</h2>
-            
-            <div className="application-job-list">
-                <ul className="application-job-ul">
-                    {jobs.map((job) => (
-                        <li key={job.id} className="application-job-li">
-                            <span className="application-job-title">{job.title}</span>
-                            <span className="application-job-location">{job.location}</span>
-                            <span className="application-job-salary">{job.salary}</span>
-                            <button onClick={() => applyForSpecificJob(job)} className="application-apply-btn">
-                                Apply
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <p>You can say "read the next job," "read the previous job," "apply for this job," or "go back to home page."</p>
-            {listening && <p>Listening for your command...</p>}
+  return (
+    <div className="application-page">
+      {/* Navbar */}
+      <div className="navbar">
+        <div className="logo">Umeed</div>
+        <div className="nav-links">
+          <button
+            className="btn"
+            onClick={() => (window.location.href = "/")}
+          >
+            <p>Home</p>
+          </button>
+          <button
+            className="btn"
+            onClick={() => (window.location.href = "/mentor")}
+          >
+            Mentor
+          </button>
         </div>
-    );
+      </div>
+
+      {/* Welcome Message */}
+      <h1 className="application-welcome-message" style={{marginBottom: "40px"}}>Welcome, {userName}</h1>
+
+      <h2 className="application-jobs-heading" style={{marginLeft: "380px"}}>
+        Want tailored job recommendations? Upload your resume:
+      </h2>
+
+      <div className="upload-resume">
+        <div className="upload-resume-container">
+          <form onSubmit={handleResumeSubmit}>
+            <label htmlFor="resume">Choose a file:</label>
+            <input
+              accept=".pdf,.txt"
+              className="resume-input"
+              name="resume"
+              id="resume"
+              type="file"
+              onChange={handleFileChange}
+              style={{color: "white", padding: "14px"}}
+            />
+            <button type="submit" className="resume-input">Send</button>
+          </form>
+        </div>
+      </div>
+
+      {/* Extracted User Info */}
+      {userInfo.name && (
+        <div className="user-info">
+          <h2 className="application-jobs-heading">Extracted Information</h2>
+          <p className="extracted-info"><span style={{color: "#008CBA"}}><strong>Email:</strong></span> {userInfo.email}</p>
+          <p className="extracted-info"><span style={{color: "#008CBA"}}><strong>Phone:</strong></span> {userInfo.phone}</p>
+          <p className="extracted-info"><span style={{color: "#008CBA"}}><strong>Skills:</strong></span> {userInfo.extracted_skills?.join(", ")}</p>
+          <p className="extracted-info"><span style={{color: "#008CBA"}}><strong>Education:</strong></span> {userInfo.extracted_education?.join(", ")}</p>
+        </div>
+      )}
+
+      {/* Recommended Job */}
+      {recommendedJob && (
+        <div className="recommended-job">
+          <h2 className="application-jobs-heading">Recommended Job Title</h2>
+          <p className="extracted-info"><span style={{color: "#008CBA", fontWeight: "bold", fontSize: "20px"}}>{recommendedJob}</span></p>
+        </div>
+      )}
+
+      {/* Top 10 Jobs from SERP */}
+      {matchingJobs.length > 0 && (
+  <>
+    <h2 className="application-jobs-heading">Relevant Top Jobs in India</h2>
+    <div className="application-job-list">
+      <ul className="application-job-ul">
+        {matchingJobs.map((job, index) => (
+          <li key={index} className="application-job-li">
+            <p className="application-job-title">
+              <strong>Company:</strong> {job.company}
+            </p>
+            <p className="application-job-location">
+              <strong>Location:</strong> {job.location}
+            </p>
+            {job.link && (
+              <button
+                onClick={() => window.open(job.link, "_blank")}
+                className="application-apply-btn"
+              >
+                Apply
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </>
+)}
+
+      {listening && <p>Listening for your command...</p>}
+    </div>
+  );
 };
 
 export default ApplicationPage;

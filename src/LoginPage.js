@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from './firebaseConfig'; // adjust the path based on your file structure
 import './LoginPage.css';
-
+import loginImg from "./assets/images/login.png";
 
 /* global webkitSpeechRecognition */
 const LoginPage = () => {
@@ -10,26 +12,25 @@ const LoginPage = () => {
         password: '',
     });
     const [error, setError] = useState('');
-    const [listening, setListening] = useState(false); // Track if STT is active
-    const navigate = useNavigate(); // For navigation
+    const [listening, setListening] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);  // Track if user is typing
+    const navigate = useNavigate();
+    let speechSynthesisInstance = null;  // To hold speech synthesis instance
 
-    // Text-to-Speech (TTS)
     const speakText = (text, callback = null) => {
         if ('speechSynthesis' in window) {
             const speech = new SpeechSynthesisUtterance(text);
             speech.lang = 'en-US';
-
             speech.onend = () => {
                 if (callback) callback();
             };
-
+            speechSynthesisInstance = speech;  // Keep reference to speech instance
             window.speechSynthesis.speak(speech);
         } else {
             alert('Text-to-Speech is not supported in this browser.');
         }
     };
 
-    // Speech-to-Text (STT)
     const startSpeechRecognition = (field, onComplete) => {
         if ('webkitSpeechRecognition' in window) {
             setListening(true);
@@ -40,17 +41,13 @@ const LoginPage = () => {
             recognition.onresult = (event) => {
                 setListening(false);
                 let transcript = event.results[0][0].transcript;
-
-                // Replace "at the rate" with "@" for email field
                 if (field === 'email') {
                     transcript = transcript.replace(/at the rate/gi, '@').replace(/ /g, '');
                 }
-
                 setFormData((prev) => ({
                     ...prev,
                     [field]: transcript,
                 }));
-
                 speakText(`You entered ${transcript}`, onComplete);
             };
 
@@ -66,8 +63,8 @@ const LoginPage = () => {
         }
     };
 
-    // Handle form submission
     const handleSubmit = async () => {
+        setError('');
         if (!formData.email.trim() || !formData.password.trim()) {
             setError('Both email and password are required.');
             speakText('Both email and password are required. Please fill them before submitting.');
@@ -75,36 +72,18 @@ const LoginPage = () => {
         }
 
         try {
-            // Call backend API for login
-            const response = await fetch('http://localhost:5000/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formData.email.trim(),
-                    password: formData.password.trim(),
-                }),
+            const userCredential = await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password.trim());
+            const user = userCredential.user;
+            speakText('Login successful! Redirecting to the application page.', () => {
+                navigate('/application', { state: { userName: user.email } });
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                speakText('Login successful! Redirecting to the application page.', () => {
-                    navigate('/application', { state: { userName: data.user.name } }); // Navigate to application page
-                });
-            } else {
-                setError(data.message || 'Login failed. Please try again.');
-                speakText('Login failed. Please try again.');
-            }
         } catch (err) {
-            console.error('Error:', err);
-            setError('An error occurred. Please try again.');
-            speakText('An error occurred. Please try again.');
+            console.error('Login error:', err.message);
+            setError('Login failed. Please check your credentials.');
+            speakText('Login failed. Please check your credentials and try again.');
         }
     };
 
-    // Navigate through fields in speaking mode
     const proceedToNextField = (current) => {
         const fieldOrder = ['email', 'password'];
         const currentIndex = fieldOrder.indexOf(current);
@@ -118,7 +97,21 @@ const LoginPage = () => {
         }
     };
 
-    // Start verbal interaction on page load
+    const handleTyping = (e, field) => {
+        setIsTyping(true);  // User is typing
+        if (speechSynthesisInstance) {
+            window.speechSynthesis.cancel();  // Stop any ongoing speech
+            speechSynthesisInstance = null;  // Reset the speech synthesis instance
+        }
+        setFormData({ ...formData, [field]: e.target.value });
+    };
+
+    const handleFocus = (field) => {
+        if (!isTyping) {
+            speakText(`Please provide your ${field}`);
+        }
+    };
+
     useEffect(() => {
         const welcomeMessage =
             'Welcome to the login page. Say "typing mode" to use your keyboard, or say "speaking mode" to provide your details verbally.';
@@ -136,9 +129,7 @@ const LoginPage = () => {
                         startSpeechRecognition('email', () => proceedToNextField('email'))
                     );
                 } else {
-                    speakText(
-                        'Command not recognized. Please say "typing mode" or "speaking mode".'
-                    );
+                    speakText('Command not recognized. Please say "typing mode" or "speaking mode".');
                 }
             };
 
@@ -150,14 +141,12 @@ const LoginPage = () => {
         });
     }, []);
 
-    // Add Enter key listener
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (e.key === 'Enter') {
-                handleSubmit(); // Submit the form when Enter is pressed
+                handleSubmit();
             }
         };
-
         window.addEventListener('keydown', handleKeyPress);
         return () => {
             window.removeEventListener('keydown', handleKeyPress);
@@ -177,7 +166,8 @@ const LoginPage = () => {
                             type="email"
                             name="email"
                             value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            onChange={(e) => handleTyping(e, 'email')}
+                            onFocus={() => handleFocus('email')}
                         />
                     </div>
                     <div>
@@ -186,7 +176,8 @@ const LoginPage = () => {
                             type="password"
                             name="password"
                             value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            onChange={(e) => handleTyping(e, 'password')}
+                            onFocus={() => handleFocus('password')}
                         />
                     </div>
                     {error && <p className="error-message">{error}</p>}
@@ -196,9 +187,11 @@ const LoginPage = () => {
                 </form>
                 {listening && <p className="listening">Listening...</p>}
             </div>
+            <div>
+                <img src={loginImg} alt="login" />
+            </div>
         </div>
     );
 };
-
 
 export default LoginPage;

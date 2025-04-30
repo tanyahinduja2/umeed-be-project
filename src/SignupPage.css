@@ -1,20 +1,19 @@
 /* General Page Styles */
 .signup-page {
     display: flex;
-    height: 100vh; /* Full screen height */
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
+    background-color: white;
     overflow: hidden; /* Prevent scroll */
 }
 
 .signup-page .left-section {
     flex: 1;
-    background: #0078d4;
+    background: #083858;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     padding: 40px;
+    padding-top: 80px;
     color: #fff;
 }
 
@@ -46,6 +45,7 @@
     justify-content: center;
     padding: 60px;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: scroll;
 }
 
 .signup-page .right-section h1 {
@@ -83,7 +83,7 @@
 }
 
 .signup-page .right-section input:focus {
-    border-color: #5d5fe8;
+    border-color: #083858;
 }
 
 .signup-page .right-section button {
@@ -91,7 +91,7 @@
     padding: 12px 20px;
     font-size: 1rem;
     color: #fff;
-    background-color: #0078d4;
+    background-color: #083858;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -99,7 +99,7 @@
 }
 
 .signup-page .right-section button:hover {
-    background-color: #4c4dcf;
+    background-color: #011829;
 }
 
 .signup-page .right-section .alt-login {
@@ -154,4 +154,14 @@
     .signup-page .left-section img {
         max-width: 60%;
     }
+}
+
+.udidDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.udidDiv button {
+    max-width: 30%;
 }

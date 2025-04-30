@@ -26,7 +26,7 @@
 
 /* Signout Button */
 .application-page .application-signout-btn {
-    background-color: #d9534f;
+    background-color: #3498db;
     border: none;
     color: white;
     padding: 8px 15px;
@@ -36,7 +36,7 @@
 }
 
 .application-page .application-signout-btn:hover {
-    background-color: #c9302c;
+    background-color: #2980b9;
 }
 
 /* Welcome Message */
@@ -111,3 +111,47 @@
 .application-page .application-apply-btn:hover {
     background-color: #2980b9;
 }
+
+
+.upload-resume-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #80979f3f;
+    border-radius: 5px;
+  }
+  
+  .upload-resume-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .resume-input[type="file"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: none;
+    background-color: #083858;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .resume-input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #083858;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .resume-input[type="submit"]:hover {
+    background-color: #006F8F;
+  }
+
+  .extracted-info {
+    margin-left: 60px; 
+    margin-bottom: 10px;
+  }
+      
