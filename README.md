@@ -22,9 +22,3 @@
 
 Umeed features an ASL recognition system trained on a labeled gesture dataset using LSTM networks. This allows inclusive communication in video calls, making the platform more accessible to the hearing-impaired community.
 
-## 🔗 Live Demo
-
-Coming Soon! (You can add a Netlify/Render/GitHub Pages/Heroku link here)
-
-## 📁 Folder Structure
-
